@@ -1,15 +1,17 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import * as actionCreators from '../state/action-creators'
+import { inputChange, postQuiz, form} from '../state/action-creators'
 
 export function Form(props) {
-
+const { inputChange, postQuiz, form} = props;
   const onChange = evt => {
-
+  const {id, value} = evt.target;
+  inputChange(id,value);
   }
 
   const onSubmit = evt => {
-
+  evt.preventDefault();
+  postQuiz(form);
   }
 
   return (
@@ -23,4 +25,12 @@ export function Form(props) {
   )
 }
 
-export default connect(st => st, actionCreators)(Form)
+const mapStateToProps = state => ({
+  form: state.form
+ 
+
+ 
+  
+})
+
+export default connect(mapStateToProps, {postQuiz, inputChange} )(Form) 
