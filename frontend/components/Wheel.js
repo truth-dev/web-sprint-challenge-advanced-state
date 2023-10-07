@@ -1,43 +1,49 @@
-import React from 'react'
-import {connect} from 'react-redux';
-import {moveClockwise, moveCounterClockwise} from '../state/action-creators';
+import React from 'react';
+import { connect } from 'react-redux';
+import { moveClockwise, moveCounterClockwise } from '../state/action-creators';
 
- function Wheel(props) {
- const { wheel} = props;
+function Wheel(props) {
+  const { wheel, dispatch } = props;
 
-  
+  const handleMoveClockwise = () => {
+    dispatch(moveClockwise());
+  };
+
+  const handleMoveCounterClockwise = () => {
+    dispatch(moveCounterClockwise());
+  };
+
+  const { position, bText } = wheel;
+
+  const activeCogIndex = (position % 6 + 6) % 6; 
 
   return (
-    
-    
     <div id="wrapper">
       <div id="wheel">
-        
-        <div className={"cog " + (wheel === 0 ? "active" : "")} style={{ "--i": 0 }}>B</div>
-        <div className={"cog " + (wheel === 1 ? "active" : "")} style={{ "--i": 1 }}></div>
-        <div className={"cog " + (wheel === 2 ? "active" : "")} style={{ "--i": 2 }}></div>
-        <div className={"cog " + (wheel === 3 ? "active" : "")} style={{ "--i": 3 }}></div>
-        <div className={"cog " + (wheel === 4 ? "active" : "")} style={{ "--i": 4 }}></div>
-        <div className={"cog " + (wheel === 5 ? "active" : "")} style={{ "--i": 5 }}></div>{/* --i is a custom CSS property, no need to touch that nor the style object */}
+        {Array.from({ length: 6 }, (_, index) => (
+          <div
+            key={index}
+            className={`cog ${index === activeCogIndex ? 'active' : ''}`}
+            style={{ '--i': index }}
+          >
+            {index === activeCogIndex ? bText : ''}
+          </div>
+        ))}
       </div>
       <div id="keypad">
-        
-        <button id="counterClockwiseBtn" onClick={() => moveCounterClockwise(wheel)} >Counter clockwise</button>
-        <button id="clockwiseBtn" onClick={() =>moveClockwise(wheel)}>Clockwise</button>
-        
+        <button id="counterClockwiseBtn" onClick={handleMoveCounterClockwise}>
+          Counter clockwise
+        </button>
+        <button id="clockwiseBtn" onClick={handleMoveClockwise}>
+          Clockwise
+        </button>
       </div>
     </div>
-    
-  )
+  );
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
+  wheel: state.wheel,
+});
 
-  wheel: state.wheel
-
-
-})
-
-
-
-export default connect(mapStateToProps)(Wheel)
+export default connect(mapStateToProps)(Wheel);
