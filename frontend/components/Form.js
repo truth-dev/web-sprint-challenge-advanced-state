@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { inputChange, postQuiz, resetForm } from '../state/action-creators';
+import { inputChange, postQuiz } from '../state/action-creators';
 
 export function Form(props) {
   const { dispatch, form, infoMessage } = props;
@@ -13,7 +13,9 @@ export function Form(props) {
   const onSubmit = (evt) => {
     evt.preventDefault();
     dispatch(postQuiz(form)); 
-    dispatch(resetForm()); 
+   
+   
+   
   };
 
   const isSubmitDisabled = () => {
@@ -27,7 +29,7 @@ export function Form(props) {
 
   return (
     <form id="form" onSubmit={onSubmit}>
-      {infoMessage && <div className="success-message">{infoMessage}</div>}
+        <div className="success-message"></div>
       <h2>Create New Quiz</h2>
       <input
         maxLength={50}
@@ -50,7 +52,7 @@ export function Form(props) {
         placeholder="Enter false answer"
         value={form.newFalseAnswer}
       />
-      <button id="submitNewQuizBtn" disabled={isSubmitDisabled()}>
+      <button id="submitNewQuizBtn" disabled={isSubmitDisabled()} >
         Submit new quiz
       </button>
     </form>

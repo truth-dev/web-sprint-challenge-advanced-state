@@ -47,50 +47,71 @@ export function fetchQuiz() {
     axios
       .get("http://localhost:9000/api/quiz/next")
       .then((res) => {
-        console.log(res.data)
         dispatch({ type: SET_QUIZ_INTO_STATE, payload: res.data });
-        dispatch({ type: SET_SELECTED_ANSWER, payload: res.data });
+       
+        
       })
       .catch((err) => {
         console.error(err);
         const errorMessage = err.response?.data || "Error fetching quiz";
-        dispatch({ type: SET_INFO_MESSAGE, payload: errorMessage });
+       
       });
   };
 }
-export function postAnswer(answer) {
+
+export function postAnswer(quiz, answer) {
   return function (dispatch) {
-    console.log("Answer to post:", answer); 
-    
+     const payload = {
+    quiz_id: quiz,
+    answer_id: answer
+     }
     axios
-      .post("http://localhost:9000/api/quiz/new",  answer )
+      .post("http://localhost:9000/api/quiz/answer", payload )
       .then((res) => {
-        console.log("Response from server:", res.data); 
-        dispatch({ type: RESET_FORM });
+        dispatch({type:SET_SELECTED_ANSWER,payload: res.data})
         dispatch({ type: SET_INFO_MESSAGE, payload: res.data.message });
-        dispatch({ type: SET_SELECTED_ANSWER, payload: answer});
+        console.log('message',res.data.message)
+         dispatch(fetchQuiz())
+       
+       
+       
+       
       })
       .catch((err) => {
-        console.error(err);
+        console.error("Error detail:", err);
         dispatch({ type: SET_INFO_MESSAGE, payload: "Error posting answer" });
       });
   };
+  
 }
-
-
-export function postQuiz() {
+export function postQuiz(data) {
   return function (dispatch) {
+    const quizData = {
+      question_text: data.newQuestion,
+      true_answer_text: data.newTrueAnswer,
+      false_answer_text: data.newFalseAnswer,
+    };
+    console.log('checkingfordata', quizData)
+    axios.post('http://localhost:9000/api/quiz/new', quizData)
     
-    axios
-      .post('http://localhost:9000/api/quiz/new')
       .then((res) => {
-        dispatch({ type: SET_INFO_MESSAGE, payload: res.data.message });
-        dispatch(resetForm());
+        console.log("Full server response:", res);
+        dispatch({type:INPUT_CHANGE, payload: res.data})
+        dispatch({type: SET_QUIZ_INTO_STATE, payload:res.data})
+        dispatch({ type: SET_INFO_MESSAGE, payload: 'Congrats: "' + quizData.question_text + '" is a great question!' });
+        dispatch(postAnswer())
+        dispatch({type:RESET_FORM})
+       
+        console.log('inputchange', res.data)
+       
+        
       })
       .catch((err) => {
-        console.error(err);
-        dispatch({ type: SET_INFO_MESSAGE, payload: 'Error posting quiz' });
+        console.error("Error detail:", err);
+        dispatch({ type: SET_INFO_MESSAGE, payload: "Error posting quiz" });
       });
   };
 }
+
+
 // ❗ On promise rejections, use log statements or breakpoints, and put an appropriate error message in state
